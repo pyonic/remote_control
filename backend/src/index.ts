@@ -1,4 +1,3 @@
-import fs from 'fs';
 import * as http from 'http';
 import { Readable } from 'stream';
 import ws, { createWebSocketStream } from 'ws';
@@ -31,8 +30,7 @@ websocket.on('connection', (ws) => {
             })
         } else if (response.data === WS_COMMANDS_ENUM.CAPTURE) {
             const wsStream = createWebSocketStream(ws, { encoding: 'utf8', decodeStrings: false });
-            console.log('REsponse: ', response);
-            
+
             let dta = `${WS_COMMANDS_ENUM.PRNT_SCRN} ${response.image}`;
 
             wsStream.write(dta);

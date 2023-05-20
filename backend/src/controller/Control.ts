@@ -110,10 +110,9 @@ const ServerCommand = async (data: ICommand): Promise<any> => {
         case WS_COMMANDS_ENUM.PRNT_SCRN:
             try {
                 const mouse_position = await mouse.getPosition();
-                
+
                 const region = await new Region(mouse_position.x - 100, mouse_position.y - 100, 200, 200)
                 const img = await (await screen.grabRegion(region)).toRGB()
-                console.log("HERE ", img);
                 
                 const jimp = await Jimp.read(await new Jimp(img))
                 const buffer = await jimp.getBase64Async(jimp.getMIME())
