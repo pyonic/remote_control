@@ -112,7 +112,9 @@ const ServerCommand = async (data: ICommand): Promise<any> => {
                 const mouse_position = await mouse.getPosition();
 
                 const region = new Region(mouse_position.x - 100, mouse_position.y - 100, 200, 200)
-
+                
+                await screen.highlight(region)
+                
                 const screenRegion = await screen.grabRegion(region);
                 const img = await screenRegion.toRGB()
                 const jimp = await Jimp.read(new Jimp(img))
