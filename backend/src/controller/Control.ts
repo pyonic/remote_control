@@ -31,7 +31,7 @@ const moveTo = async (x: number, direction: string | any) => {
     await mouse.pressButton(Button.LEFT);
     // @ts-ignore
     console.log(direction, COMMAND[direction]);
-    
+
     // @ts-ignore
     await mouse.move(COMMAND[direction](x));
     await mouse.releaseButton(Button.LEFT);
@@ -39,7 +39,7 @@ const moveTo = async (x: number, direction: string | any) => {
 
 const moveToPoints = async (points: Array<Point>) => {
     const initPos: Point = points[0];
-    await mouse.setPosition(initPos); 
+    await mouse.setPosition(initPos);
     await mouse.pressButton(Button.LEFT);
     await mouse.move(points)
     await mouse.releaseButton(Button.LEFT);
@@ -58,7 +58,7 @@ const ServerCommand = async (data: ICommand): Promise<any> => {
     switch (command) {
         case WS_COMMANDS_ENUM.MOUSE_POSITION:
             const position: Point = await mouse.getPosition();
-            return {data: 'mouse_position', position};
+            return { data: 'mouse_position', position };
         case WS_COMMANDS_ENUM.DRAW_RECTANGLE:
             if (x && y) {
                 await moveTo(x, 'mouse_up');
@@ -80,24 +80,24 @@ const ServerCommand = async (data: ICommand): Promise<any> => {
                 const position: Point = await mouse.getPosition();
                 const detailedDrawing: boolean = x < 40;
 
-                const quarters: any = {one: [], two: [], three: [], four: []};
+                const quarters: any = { one: [], two: [], three: [], four: [] };
                 for (let i = 1; i <= x; i++) {
-                    const z: number = Math.sqrt(x*x - Math.pow(i, 2));
+                    const z: number = Math.sqrt(x * x - Math.pow(i, 2));
                     const pX: number = position.x + x - z;
 
                     if (detailedDrawing) {
                         await pressBtn(pX, position.y - i);
-                        await pressBtn(pX + z*2, position.y - i);
+                        await pressBtn(pX + z * 2, position.y - i);
                         await pressBtn(pX, position.y + i);
-                        await pressBtn(pX + z*2, position.y + i);
+                        await pressBtn(pX + z * 2, position.y + i);
                     } else {
                         quarters.one.push(new Point(pX, position.y - i))
-                        quarters.two.push(new Point(pX + z*2, position.y - i))
+                        quarters.two.push(new Point(pX + z * 2, position.y - i))
                         quarters.three.push(new Point(pX, position.y + i))
-                        quarters.four.push(new Point(pX + z*2, position.y + i))
+                        quarters.four.push(new Point(pX + z * 2, position.y + i))
                     }
                 }
-                
+
                 if (!detailedDrawing) {
                     await moveToPoints(quarters.one);
                     await moveToPoints(quarters.two.reverse());
@@ -111,14 +111,16 @@ const ServerCommand = async (data: ICommand): Promise<any> => {
             try {
                 const mouse_position = await mouse.getPosition();
 
-                const region = await new Region(mouse_position.x - 100, mouse_position.y - 100, 200, 200)
-                const img = await (await screen.grabRegion(region)).toRGB()
-                
-                const jimp = await Jimp.read(await new Jimp(img))
+                const region = new Region(mouse_position.x - 100, mouse_position.y - 100, 200, 200)
+
+                const screenRegion = await screen.grabRegion(region);
+                const img = await screenRegion.toRGB()
+                const jimp = await Jimp.read(new Jimp(img))
                 const buffer = await jimp.getBase64Async(jimp.getMIME())
+
                 return { data: 'capture', image: buffer.split('data:image/png;base64,').join('') };
             } catch (error) {
-                console.log('Coordinated out of scope', error);
+                console.log('Coordinated out of scope');
             }
     }
 
